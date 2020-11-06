@@ -1,27 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAXCHAR 10000 
+#define MAXCHAR 10000
 
-typedef struct ListChar{
+typedef struct ListChar
+{
     char letter;
     int occ;
-    struct ListChar* next;
-}ListChar;
+    struct ListChar *next;
+} ListChar;
 
-typedef struct Node{
+typedef struct Node
+{
     char letter;
     int occ;
     struct Node *right;
     struct Node *left;
-}Node;
+} Node;
 
-void display_tree(Node* tree){
-    if(tree == NULL) {
+void display_tree(Node *tree)
+{
+    if (tree == NULL)
+    {
         return;
     }
     display_tree(tree->left);
-    printf("%d|%c    ",tree->occ, tree->letter);
+    printf("%d|%c    ", tree->occ, tree->letter);
     display_tree(tree->right);
 }
 
@@ -40,9 +44,7 @@ long decimalToBinary(int decimalnum)
     return binarynum;
 }
 
-void letterToByte(char input[
-    
-], long bytes[])
+void letterToByte(char input[], long bytes[])
 {
 
     int len = strlen(input);
@@ -71,7 +73,7 @@ void readtext(char *output)
         printf("Could not open file %s", filename);
     }
     else
-    { 
+    {
         while (fgets(str, MAXCHAR, fp) != NULL)
         {
             strncat(output, str, (sizeof(output) - strlen(str)));
@@ -127,51 +129,38 @@ void characters()
     fclose(fp);
 }
 
-ListChar* add_list_char(char lettre, int occurence){
-    ListChar* mylist = (ListChar*)malloc(sizeof(ListChar));
-    mylist->letter = lettre; 
+/*ListChar *add_list_char(char lettre, int occurence)
+{
+    ListChar *mylist = (ListChar *)malloc(sizeof(ListChar));
+    mylist->letter = lettre;
     mylist->occ = occurence;
     mylist->next = NULL;
     return mylist;
-}
+}*/
 
-void display_list_char(ListChar* mylist){
-    printf("\n");
-    if(mylist != NULL){
-        ListChar* temp = mylist;
-        while(temp != NULL){
-            printf("%c appears %d times\n", temp->letter , temp->occ);
-            temp = temp -> next;
-        }
-    }
-}
 
-ListChar* create_list_char(){
-    ListChar* mylist = (ListChar*)malloc(sizeof(ListChar));
-    mylist->letter = 'P';
-    mylist->occ = 3;
-    mylist->next = add_list_char('A', 2);
-    mylist->next->next = add_list_char('M', 6);
-    mylist->next->next->next = add_list_char('D', 1);
-    mylist->next->next->next->next = add_list_char('N', 3);
-    return mylist;
-}
 
-void list_remove(ListChar** mylist, char lettre ){
-    if(*mylist != NULL){
+void list_remove(ListChar **mylist, char lettre)
+{
+    if (*mylist != NULL)
+    {
         ListChar *temp = *mylist;
         ListChar *prev;
-        while(temp != NULL && temp->letter == lettre){
+        while (temp != NULL && temp->letter == lettre)
+        {
             *mylist = temp->next;
             temp = *mylist;
         }
-        while(temp != NULL){
-            while(temp != NULL && temp-> letter != lettre){
+        while (temp != NULL)
+        {
+            while (temp != NULL && temp->letter != lettre)
+            {
                 prev = temp;
                 temp = temp->next;
             }
 
-            if(temp == NULL){
+            if (temp == NULL)
+            {
                 return;
             }
             prev->next = temp->next;
@@ -180,16 +169,20 @@ void list_remove(ListChar** mylist, char lettre ){
     }
 }
 
-Node* smallest_item(ListChar** mylist){
-    if(*mylist != NULL){
-        ListChar* temp = (*mylist)->next;
-        Node* min_node = (Node*)malloc(sizeof(Node));
+Node *smallest_item(ListChar **mylist)
+{
+    if (*mylist != NULL)
+    {
+        ListChar *temp = (*mylist)->next;
+        Node *min_node = (Node *)malloc(sizeof(Node));
         min_node->letter = (*mylist)->letter;
         min_node->occ = (*mylist)->occ;
-        min_node ->left = NULL;
-        min_node ->right = NULL;
-        while(temp != NULL){
-            if(min_node->occ > temp->occ){
+        min_node->left = NULL;
+        min_node->right = NULL;
+        while (temp != NULL)
+        {
+            if (min_node->occ > temp->occ)
+            {
                 min_node->occ = temp->occ;
                 min_node->letter = temp->letter;
             }
@@ -200,28 +193,33 @@ Node* smallest_item(ListChar** mylist){
     }
 }
 
-Node* create_huffman_parents_node(Node* child1, Node* child2){
-    Node* parent= (Node*)malloc(sizeof(Node));
+Node *create_huffman_parents_node(Node *child1, Node *child2)
+{
+    Node *parent = (Node *)malloc(sizeof(Node));
     parent->occ = child1->occ + child2->occ;
-    parent->letter = NULL;
+    parent->letter = (void *)NULL;
     parent->right = child1;
     parent->left = child2;
     return parent;
 }
 
-int is_empty(ListChar* mylist){
-    if(mylist == NULL){
+int is_empty(ListChar *mylist)
+{
+    if (mylist == NULL)
+    {
         return 1;
     }
     return 0;
 }
 
-Node* huffman_tree(ListChar** mylist){
-    Node* element_min = smallest_item(mylist);
-    Node* element_min2 = smallest_item(mylist);
-    Node* temp = create_huffman_parents_node(element_min, element_min2);
-    Node* root;
-    while(!is_empty(*mylist)){
+Node *huffman_tree(ListChar **mylist)
+{
+    Node *element_min = smallest_item(mylist);
+    Node *element_min2 = smallest_item(mylist);
+    Node *temp = create_huffman_parents_node(element_min, element_min2);
+    Node *root;
+    while (!is_empty(*mylist))
+    {
         element_min = smallest_item(mylist);
         root = create_huffman_parents_node(temp, element_min);
         temp = root;
@@ -229,95 +227,90 @@ Node* huffman_tree(ListChar** mylist){
     return root;
 }
 
-
-int main()
-{
-    /*
-    char *text[MAXCHAR];
-    readtext(text); // read the .txt file and store it the array 'text'.
-    int len = strlen(text);
-    long bytes[len];
-    letterToByte(text, bytes); // convert each letter of the array 'text' in its binary representation and store them into array 'bytes'.
-    writetext(bytes, len);     // write on an empty file 'Output.txt' what the array 'bytes' contains.
-    characters();
-    */
-    ListChar* mylist = create_list_char();
-    ListChar* element_min;
-
-    Node* root = huffman_tree(&mylist);
-    printf("%d|%c    ",root->occ, root->letter);
-    printf("%d|%c    ",root->left->occ, root->left->letter);
-    printf("%d|%c    ",root->right->occ, root->right->letter);
-    printf("%d|%c    ",root->right->left->occ, root->right->left->letter);
-    printf("%d|%c    ",root->right->right->occ, root->right->right->letter);
-    printf("%d|%c    ",root->right->right->left->occ, root->right->right->left->letter);
-    printf("%d|%c    ",root->right->right->right->occ, root->right->right->right->letter);
-    printf("%d|%c    ",root->right->right->right->left->occ, root->right->right->right->left->letter);
-    printf("%d|%c    ",root->right->right->right->right->occ, root->right->right->right->right->letter);
-    return 0;
-}
-typedef struct Element{ /// la c'est ma structure occurence en gros c'est une liste avec deux datas (occurences et une lettre)
-    int occurence;
-    char letter;
-    struct Element* next;
-}Element;
-
-
-int is_in_the_list(Element* l, char letter){ /// la pour simplifier mon code j'utilise la fonction is_in_the list de hephaistos pour savoir si un element est deja dans la liste ou non
-    int i=1;
-    Element* temp;
+int is_in_the_list(ListChar *l, char letter)
+{ /// la pour simplifier mon code j'utilise la fonction is_in_the list de hephaistos pour savoir si un element est deja dans la liste ou non
+    int i = 1;
+    ListChar *temp;
     temp = l;
-    while(temp != NULL){
-        if (temp->letter  == letter){
+    while (temp != NULL)
+    {
+        if (temp->letter == letter)
+        {
             return i;
         }
         temp = temp->next;
         i++;
-
     }
     return -1;
 }
 
-Element* number_of_occurences(char string[100]){ /// la c'est ma fonction nombre d'occurences j'ai mmis string[100] en parametre mais la taille a mettre sera donée par une autre fonction
+ListChar *number_of_occurences(char string[100])
+{ /// la c'est ma fonction nombre d'occurences j'ai mmis string[100] en parametre mais la taille a mettre sera donée par une autre fonction
     int i;
-    Element *list = malloc(sizeof(Element));
-    Element* temp = list,*temp2;
-    if(strlen(string)>0){
+    ListChar *list = malloc(sizeof(ListChar));
+    ListChar *temp = list, *temp2;
+    if (strlen(string) > 0)
+    {
         list->next = NULL; /// la j'initialise la premiere valeur de ma liste avec la premiere lettre du message.
-        list->letter =string[0];
-        list->occurence = 1;
+        list->letter = string[0];
+        list->occ = 1;
 
-
-         for(i=1;i<strlen(string);i++){ /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
-            int pos = is_in_the_list(list,string[i]);
-            if(pos== -1){
-                Element* new_letter = malloc(sizeof(Element));
+        for (i = 1; i < strlen(string); i++)
+        { /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
+            int pos = is_in_the_list(list, string[i]);
+            if (pos == -1)
+            {
+                ListChar *new_letter = malloc(sizeof(ListChar));
                 new_letter->letter = string[i];
-                new_letter->occurence = 1;
+                new_letter->occ = 1;
                 new_letter->next = NULL;
                 temp->next = new_letter;
                 temp = temp->next;
             }
-            else{
+            else
+            {
                 int count = 1; /// ducoup dans le cas contraire je recherche la position grace a is_in_the_list et j'auguemente juste l'occurence de 1.
                 temp2 = list;
-                while(temp2!=NULL && count != pos){
+                while (temp2 != NULL && count != pos)
+                {
                     temp2 = temp2->next;
-                    count+=1;
+                    count += 1;
                 }
-                temp2->occurence+=1;
+                temp2->occ += 1;
             }
         }
         return list;
     }
 }
 
-
-void AfficheListe(Element *list){ /// la c'etait juste pour tester si ca marchait j'avais besoin d'une fonction afficher peut etre utile au cas ou ...
-    Element* temp = list;
-    while(temp!=NULL){
-        printf("\n %c   %d",temp->letter,temp->occurence);
+void display_list_of_occ(ListChar *list)
+{ /// la c'etait juste pour tester si ca marchait j'avais besoin d'une fonction afficher peut etre utile au cas ou ...
+    ListChar *temp = list;
+    while (temp != NULL)
+    {
+        printf("\n %c : %d", temp->letter, temp->occ);
 
         temp = temp->next;
     }
+}
+
+int main()
+{
+
+    char *text[MAXCHAR];
+    readtext(text); // read the .txt file and store it the array 'text'.
+    /*
+    int len = strlen(text);
+    long bytes[len];
+    letterToByte(text, bytes); // convert each letter of the array 'text' in its binary representation and store them into array 'bytes'.
+    writetext(bytes, len);     // write on an empty file 'Output.txt' what the array 'bytes' contains.
+    characters();
+    */
+
+    ListChar *mylist = number_of_occurences(text);
+
+    Node *root = huffman_tree(&mylist);
+    display_tree(root);
+
+    return 0;
 }
