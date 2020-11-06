@@ -256,3 +256,68 @@ int main()
     printf("%d|%c    ",root->right->right->right->right->occ, root->right->right->right->right->letter);
     return 0;
 }
+typedef struct Element{ /// la c'est ma structure occurence en gros c'est une liste avec deux datas (occurences et une lettre)
+    int occurence;
+    char letter;
+    struct Element* next;
+}Element;
+
+
+int is_in_the_list(Element* l, char letter){ /// la pour simplifier mon code j'utilise la fonction is_in_the list de hephaistos pour savoir si un element est deja dans la liste ou non
+    int i=1;
+    Element* temp;
+    temp = l;
+    while(temp != NULL){
+        if (temp->letter  == letter){
+            return i;
+        }
+        temp = temp->next;
+        i++;
+
+    }
+    return -1;
+}
+
+Element* number_of_occurences(char string[100]){ /// la c'est ma fonction nombre d'occurences j'ai mmis string[100] en parametre mais la taille a mettre sera donée par une autre fonction
+    int i;
+    Element *list = malloc(sizeof(Element));
+    Element* temp = list,*temp2;
+    if(strlen(string)>0){
+        list->next = NULL; /// la j'initialise la premiere valeur de ma liste avec la premiere lettre du message.
+        list->letter =string[0];
+        list->occurence = 1;
+
+
+         for(i=1;i<strlen(string);i++){ /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
+            int pos = is_in_the_list(list,string[i]);
+            if(pos== -1){
+                Element* new_letter = malloc(sizeof(Element));
+                new_letter->letter = string[i];
+                new_letter->occurence = 1;
+                new_letter->next = NULL;
+                temp->next = new_letter;
+                temp = temp->next;
+            }
+            else{
+                int count = 1; /// ducoup dans le cas contraire je recherche la position grace a is_in_the_list et j'auguemente juste l'occurence de 1.
+                temp2 = list;
+                while(temp2!=NULL && count != pos){
+                    temp2 = temp2->next;
+                    count+=1;
+                }
+                temp2->occurence+=1;
+            }
+        }
+        return list;
+    }
+}
+
+
+void AfficheListe(Element *list){ /// la c'etait juste pour tester si ca marchait j'avais besoin d'une fonction afficher peut etre utile au cas ou ...
+    Element* temp = list;
+    while(temp!=NULL){
+        printf("\n %c   %d",temp->letter,temp->occurence);
+
+        temp = temp->next;
+    }
+}
