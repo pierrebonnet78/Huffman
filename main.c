@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAXCHAR 10000
+#define MAXCHAR 100000
 
 typedef struct ListChar
 {
@@ -33,9 +33,9 @@ long decimalToBinary(int decimalnum)
 {
     long binarynum = 0;
     int rem, temp = 1;
-
     while (decimalnum != 0)
     {
+
         rem = decimalnum % 2;
         decimalnum = decimalnum / 2;
         binarynum = binarynum + rem * temp;
@@ -95,7 +95,7 @@ void writetext(long bytes[], int size)
     {
         for (int i = 0; i < size; i++)
         {
-            fprintf(fp, "%ld", bytes[i]);
+            fprintf(fp, "%ld ", bytes[i]);
             if ((i + 2) % 10 == 1)
             {
                 fprintf(fp, "\n");
@@ -137,8 +137,6 @@ void characters()
     mylist->next = NULL;
     return mylist;
 }*/
-
-
 
 void list_remove(ListChar **mylist, char lettre)
 {
@@ -212,7 +210,7 @@ int is_empty(ListChar *mylist)
     return 0;
 }
 
-Node *huffman_tree(ListChar **mylist)
+Node *create_huffman_tree(ListChar **mylist)
 {
     Node *element_min = smallest_item(mylist);
     Node *element_min2 = smallest_item(mylist);
@@ -244,7 +242,7 @@ int is_in_the_list(ListChar *l, char letter)
     return -1;
 }
 
-ListChar *number_of_occurences(char string[100])
+ListChar *number_of_occurences(char string[MAXCHAR])
 { /// la c'est ma fonction nombre d'occurences j'ai mmis string[100] en parametre mais la taille a mettre sera donée par une autre fonction
     int i;
     ListChar *list = malloc(sizeof(ListChar));
@@ -283,6 +281,65 @@ ListChar *number_of_occurences(char string[100])
     }
 }
 
+ListChar *sortListChar(ListChar *liste) //sort the list of occurence by field 'occ' using BUBBLE SORTING
+{
+    if (liste == NULL)
+        return NULL; // liste vide, rien à trier
+    if (liste->next == NULL)
+        return liste; // un seul élément, rien à trier
+
+    ListChar *root = liste;
+
+    int restart;
+    do
+    {
+        // commence au début de la liste
+        ListChar *previous = NULL;
+        ListChar *element = root;
+        ListChar *succeeding = element->next;
+        restart = 0;
+
+        while (succeeding != NULL)
+        {
+            if (succeeding->occ < element->occ)
+            {
+                // si le classement de l'élément et de son suivant est incorrect :
+
+                // la liste devra être re-parcourue
+                restart = 1;
+
+                // inverse l'élément courant et son succeeding
+                if (previous == NULL)
+                {
+                    root = succeeding;
+                }
+                else
+                {
+                    previous->next = succeeding;
+                }
+                element->next = succeeding->next;
+                succeeding->next = element;
+
+                // avance dans la liste
+                previous = succeeding;
+                succeeding = element->next;
+            }
+            else
+            {
+                // si le classement de l'élément et de son suivant est correct :
+
+                // avance dans la liste
+                previous = element;         // nouveau précédent = ancien élément
+                element = element->next;    // nouvel élément = ancien suivant
+                succeeding = element->next; // nouveau suivant = suivant du nouvel élément
+            }
+        }
+    } while (restart);
+
+    // retourne la nouvelle liste
+    return root;
+}
+
 void display_list_of_occ(ListChar *list)
 { /// la c'etait juste pour tester si ca marchait j'avais besoin d'une fonction afficher peut etre utile au cas ou ...
     ListChar *temp = list;
@@ -294,23 +351,63 @@ void display_list_of_occ(ListChar *list)
     }
 }
 
+void treetotxt(Node *huffman_tree)
+{
+    FILE *fp;
+    Node *temp = huffman_tree;
+    Node *root = huffman_tree;
+    int size = 5;
+    char result[MAXCHAR] = "0";
+    char path_0[] = "0";
+    char path_1[] = "1";
+    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Project 1 Huffman Coding\\dico.txt", "w");
+    int i = 0;
+    int cpt = 0;
+
+    if (fp == NULL)
+    {
+        printf("\nError, Cannot open the file 'dico.txt'");
+    }
+    else
+    {
+        while (temp->right != NULL && temp->left != NULL)
+        {
+            if (temp->left->left == NULL)
+            {
+                fprintf(fp, "%c : ", temp->left->letter);
+                for (i = 0; i < cpt; i++)
+                {
+                    fprintf(fp, "1");
+                }
+                fprintf(fp, "0\n");
+            }
+            temp = temp->right;
+            cpt++;
+        }
+    }
+    fclose(fp);
+}
+
 int main()
 {
-
     char *text[MAXCHAR];
     readtext(text); // read the .txt file and store it the array 'text'.
-    /*
     int len = strlen(text);
     long bytes[len];
     letterToByte(text, bytes); // convert each letter of the array 'text' in its binary representation and store them into array 'bytes'.
     writetext(bytes, len);     // write on an empty file 'Output.txt' what the array 'bytes' contains.
-    characters();
-    */
+    //characters();
 
     ListChar *mylist = number_of_occurences(text);
 
-    Node *root = huffman_tree(&mylist);
-    display_tree(root);
+    //display_tree(root);
 
-    return 0;
+    sortListChar(mylist);
+    display_list_of_occ(mylist);
+
+    Node *root = create_huffman_tree(&mylist);
+    printf("\n");
+
+    treetotxt(root);
+    printf("\n\n main ok");
 }
