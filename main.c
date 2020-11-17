@@ -18,6 +18,14 @@ typedef struct Node
     struct Node *left;
 } Node;
 
+typedef struct Queue
+{
+    int front;
+    int rear;
+    int size;
+    struct Node **arrayofnode;
+} Queue;
+
 void display_tree(Node *tree)
 {
     if (tree == NULL)
@@ -167,25 +175,243 @@ void list_remove(ListChar **mylist, char lettre)
     }
 }
 
-Node *smallest_item(ListChar **mylist)
+Node *createNode(char data, int occurence)
+{
+    Node *temp = (Node *)malloc(sizeof(Node));
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->letter = data;
+    temp->occ = occurence;
+    return temp;
+}
+
+Queue *createQueue(int size)
+{
+    Queue *queue = (Queue *)malloc(sizeof(Queue));
+    queue->front = -1;
+    queue->rear = -1;
+    queue->size = size;
+    queue->arrayofnode = (Node **)malloc(queue->size * sizeof(Node *));
+    return queue;
+}
+
+int isQueueSizeOne(Queue *queue)
+{
+    if ((queue->front == queue->rear) && (queue->front != -1))
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int isQueueEmpty(Queue *queue)
+{
+    if (queue->front == -1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int isQueueFull(Queue *queue)
+{
+    if (queue->rear == queue->size - 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void enQueue(Queue *queue, Node *node)
+{
+    if (!isQueueFull(queue) && node != NULL)
+    {
+        queue->arrayofnode[++queue->rear] = node;
+        if (queue->front == -1)
+            ++queue->front;
+    }
+}
+
+Node *deQueue(Queue *queue)
+{
+    if (!isQueueEmpty(queue))
+    {
+        Node *temp = queue->arrayofnode[queue->front];
+        if (queue->front == queue->rear)
+        { // There is only one item in the array
+            queue->front = -1;
+            queue->rear = -1;
+        }
+        else
+        {
+            ++queue->front;
+        }
+        return temp;
+    }
+}
+
+Node *getFrontQueue(Queue *queue)
+{
+    if (isQueueEmpty(queue))
+    {
+        return NULL;
+    }
+    return queue->arrayofnode[queue->front];
+}
+
+Node *findMinTwoQueues(Queue *Queue1, Queue *Queue2)
+{
+    if (Queue1 != NULL && Queue2 != NULL)
+    {
+        // If queue 1 is empty, dequeue from queue 2
+        if (isQueueEmpty(Queue1))
+            return deQueue(Queue2);
+
+        // If queue 2 is empty, dequeue from queue 1
+        if (isQueueEmpty(Queue2))
+            return deQueue(Queue1);
+
+        // Else compare the front of the two queues and dequeue min
+        if (getFrontQueue(Queue1)->occ < getFrontQueue(Queue2)->occ)
+        {
+            return deQueue(Queue1);
+        }
+        //Last possibility
+        return deQueue(Queue2);
+    }
+}
+
+int isLeaf(Node *root)
+{
+    if (root->left == NULL && root->right == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void printArray(int arr[], int n)
+{
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+int getListCharactersSize(ListChar *list_characters)
+{
+    int size = 0;
+    ListChar *temp = list_characters;
+    if (temp != NULL)
+    {
+
+        while (temp->next != NULL)
+        {
+            size++;
+            temp = temp->next;
+        }
+        return size;
+    }
+    return size;
+}
+
+Node *createHuffmanTreeWithQueue(list_characters)
+{
+
+    int size = getListCharactersSize(list_characters);
+    Node *left, *right, *top;
+    int i;
+    ListChar *temp = list_characters;
+
+    // 1 - Create 2 empty queues
+    Queue *queue1 = createQueue(size);
+    Queue *queue2 = createQueue(size);
+
+    // 2 - Create a leaf node for each character of the data[] array, enqueu it to queue 1
+    for (i = 0; i < size; i++)
+    {
+        enQueue(queue1, createNode(temp->letter, temp->occ));
+        temp = temp->next;
+    }
+    while (!(isQueueEmpty(queue1) && isQueueSizeOne(queue2)))
+    {
+        // 3 - Dequeue two nodes with the min occurrence by looking at the front of both queues
+        left = findMinTwoQueues(queue1, queue2);
+        right = findMinTwoQueues(queue1, queue2);
+
+        // 4 - Create new node with occurences equal to the sum of the two other nodes and enqueu this node to second queue
+        top = createNode('$', left->occ + right->occ);
+        top->left = left;
+        top->right = right;
+        enQueue(queue2, top);
+    }
+    return deQueue(queue2);
+}
+
+void printCodes(Node *root, int arr[], int top)
+{
+    // Assign 0 to left edge and recur
+    if (root->left)
+    {
+        arr[top] = 0;
+        printCodes(root->left, arr, top + 1);
+    }
+
+    // Assign 1 to right edge and recur
+    if (root->right)
+    {
+        arr[top] = 1;
+        printCodes(root->right, arr, top + 1);
+    }
+
+    // If this is a leaf node, then it contains one of the
+    // input characters, print the character and its code
+    // from arr[]
+    if (isLeaf(root))
+    {
+        printf("%c : ", root->letter);
+        printArray(arr, top);
+    }
+}
+
+void HuffmanCodes(ListChar *list_characters)
+{
+    // Construct Huffman Tree
+    Node *root = createHuffmanTreeWithQueue(list_characters);
+
+    int arr[MAXCHAR];
+    int top = 0;
+
+    printCodes(root, arr, top);
+    display_tree(root);
+    treetotxt(root);
+}
+
+
+Node *removeElement(ListChar **mylist)
 {
     if (*mylist != NULL)
     {
-        ListChar *temp = (*mylist)->next;
-        Node *min_node = (Node *)malloc(sizeof(Node));
+        Node* min_node = (Node*)malloc(sizeof(Node));
         min_node->letter = (*mylist)->letter;
-        min_node->occ = (*mylist)->occ;
-        min_node->left = NULL;
+        min_node->occ =(*mylist)->occ;
+        min_node->left = NULL; 
         min_node->right = NULL;
-        while (temp != NULL)
-        {
-            if (min_node->occ > temp->occ)
-            {
-                min_node->occ = temp->occ;
-                min_node->letter = temp->letter;
-            }
-            temp = temp->next;
-        }
+
         list_remove(mylist, min_node->letter);
         return min_node;
     }
@@ -195,7 +421,7 @@ Node *create_huffman_parents_node(Node *child1, Node *child2)
 {
     Node *parent = (Node *)malloc(sizeof(Node));
     parent->occ = child1->occ + child2->occ;
-    parent->letter = (void *)NULL;
+    parent->letter = '$';
     parent->right = child1;
     parent->left = child2;
     return parent;
@@ -212,13 +438,14 @@ int is_empty(ListChar *mylist)
 
 Node *create_huffman_tree(ListChar **mylist)
 {
-    Node *element_min = smallest_item(mylist);
-    Node *element_min2 = smallest_item(mylist);
+
+    Node *element_min = removeElement(mylist);
+    Node *element_min2 = removeElement(mylist);
     Node *temp = create_huffman_parents_node(element_min, element_min2);
     Node *root;
     while (!is_empty(*mylist))
     {
-        element_min = smallest_item(mylist);
+        element_min = removeElement(mylist);
         root = create_huffman_parents_node(temp, element_min);
         temp = root;
     }
@@ -390,7 +617,8 @@ void treetotxt(Node *huffman_tree)
 
 int main()
 {
-    char *text[MAXCHAR];
+
+    char text[MAXCHAR];
     readtext(text); // read the .txt file and store it the array 'text'.
     int len = strlen(text);
     long bytes[len];
@@ -398,16 +626,15 @@ int main()
     writetext(bytes, len);     // write on an empty file 'Output.txt' what the array 'bytes' contains.
     //characters();
 
-    ListChar *mylist = number_of_occurences(text);
+    ListChar *list_characters = number_of_occurences(text);
+    sortListChar(list_characters);
 
-    //display_tree(root);
+    //  Node *root = create_huffman_tree(&list_characters);   ancienne méthode pour générer l'abre d'Huffman
+    //treetotxt(root);   à modifier ne marche plus avec le nouvel arbre de Huffman
 
-    sortListChar(mylist);
-    display_list_of_occ(mylist);
+    display_list_of_occ(list_characters);
+    HuffmanCodes(list_characters); //génére l'arbre de Huffman grace à deux Queues
 
-    Node *root = create_huffman_tree(&mylist);
-    printf("\n");
+    return 0;
 
-    treetotxt(root);
-    printf("\n\n main ok");
 }
