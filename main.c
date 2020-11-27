@@ -28,6 +28,19 @@ typedef struct Queue
     struct Node** arrayofnode;
 } Queue;
 
+typedef struct Letter
+{
+    char lettre[5];
+    char code[10];
+    struct Node* next;
+}Letter;
+
+typedef struct Dictionnary
+{
+    Letter* letter;
+    int size;
+} Dictionnary;
+
 void readtext(char* output)
 {
     FILE* fp;
@@ -154,6 +167,12 @@ ListChar* number_of_occurences(char string[MAXCHAR])
     int i;
     ListChar* list = (ListChar*)malloc(sizeof(ListChar));
     ListChar* temp = list, * temp2;
+    for (int i = 0; i < strlen(string); i++) {
+        if (string[i] == ' ') {
+            string[i] = 'X';
+        }
+    }
+    
     if (list != NULL) {
         if (strlen(string) > 0){
             list->next = NULL; /// la j'initialise la premiere valeur de ma liste avec la premiere lettre du message.
@@ -165,7 +184,7 @@ ListChar* number_of_occurences(char string[MAXCHAR])
                 if (pos == -1){
                     ListChar* new_letter =(ListChar*)malloc(sizeof(ListChar));
                     if (new_letter != NULL) {
-                        new_letter->letter = string[i];
+                        new_letter->letter = string[i]; 
                         new_letter->occ = 1;
                         new_letter->next = NULL;
                         temp->next = new_letter;
@@ -368,20 +387,19 @@ int isLeaf(Node* root)
     }
 }
 
-void printArray(int arr[], int n, Node* root)
+void createDico(int arr[], int n, Node* root)
 {
-    int i;
-    for (i = 0; i < n; i++)
-    {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-    
     FILE* fp;
+    int i;
     fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Dico.txt", "a");
-    fprintf(fp,"%c : ", root->letter);
+    /*
+    if (root->letter == " ") {
+        fprintf(fp, "$");
+    }
+    */
+    fprintf(fp,"%c ", root->letter);
         for (i = 0; i < n; i++) {
-            fprintf(fp, "%d ", arr[i]);
+            fprintf(fp, "%d", arr[i]);
          }
     fprintf(fp, "\n");
     fclose(fp);
@@ -406,7 +424,7 @@ int getListCharactersSize(ListChar* list_characters)
 Node* createHuffmanTreeWithQueue(ListChar* list_characters)
 {
     int size;
-    size = getListCharactersSize(list_characters);
+    size = getListCharactersSize(list_characters) +1 ;
     Node* left, * right, * top;
     int i;
     ListChar* temp = list_characters;
@@ -451,49 +469,112 @@ void printCodes(Node* root, int arr[], int top)
     // input characters, print the character and its code
     // from arr[]
     if (isLeaf(root)) {
-        printf("%c : ", root->letter);
-        printArray(arr, top, root);
+        createDico(arr, top, root);
     }
 }
 
-void huffman_code(ListChar* list_characters)
+Node* huffman_code(ListChar* list_characters)
 {
     // Construct Huffman Tree
     Node* root = createHuffmanTreeWithQueue(list_characters);
 
     int arr[MAXCHAR];
     int top = 0;
-
     printCodes(root, arr, top);
+    return root;
  
-    
 }
+
+
+Letter* translate_text(char* text, ListChar* list_characters) {
+    FILE* fp;
+    char str[MAXCHAR];
+    char* filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Dico.txt";
+    fp = fopen(filename, "r");
+    if (fp != NULL)
+    {
+
+        Letter* root = (Letter*)malloc(sizeof(Letter));
+        Letter* temp = root;
+        
+        while (fgets(str, MAXCHAR, fp) != NULL) {
+            sscanf(str, "%s %s", temp->lettre, temp->code);
+            temp->next = (Letter*)malloc(sizeof(Letter));
+            temp = temp->next;
+        }
+        temp->next = NULL;
+        fclose(fp);
+        return root;
+    }
+}
+
+
+
+void write_in_huffman_code(char* text, Letter* list_characters_huffman_code, int sizelist) {
+    FILE* fp;
+    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\OutputHuffmanCode.txt", "w");
+    if (fp == NULL)
+    {
+        printf("\nError, Cannot open the file !");
+    }
+    else
+    {
+        int size, i, found;
+        size = strlen(text);
+        Letter* temp = list_characters_huffman_code;
+        char code;
+        found = 0;
+        for (i = 0; i < strlen(text); i++) {
+            while (temp->lettre != text[i] && temp != NULL) {  //Jamais validé donc pas d'écriture sur le fichier ? pourquoi ?? 
+                temp = temp->next;
+            }
+            if (temp != NULL) {
+                fprintf(fp,"%s", temp->code);
+            }
+            temp = list_characters_huffman_code;
+        }
+    } 
+    fclose(fp);
+}
+
 int main()
 {
     char text[MAXCHAR];
     readtext(text);
-    int sizetext;
+    int sizetext, sizelist;
     sizetext = (int)strlen(text);
     long* bytes = (long*)malloc(sizetext * sizeof(long));
     letterToByte(text, bytes, sizetext);
     writetext(bytes, sizetext);
     free(bytes);
-    character_comparaison();
-
-    
+    //character_comparaison();
 
     ListChar* list_characters = NULL;
     list_characters = number_of_occurences(text);
+
+    sizelist = getListCharactersSize(list_characters);
+    
+
     sortListChar(list_characters);
+    
+    Node* root;
+    //display_list_of_occ(list_characters);
+    //root = huffman_code(list_characters);
 
-    display_list_of_occ(list_characters);
+    
+    Letter* list_characters_huffman_code = NULL;
 
-    printf("\n\n");
-    huffman_code(list_characters); 
+    list_characters_huffman_code = translate_text(text, list_characters);
+    Letter* temp = list_characters_huffman_code;
+
+    /*while (temp != NULL) {
+        printf("%s %s\n", temp->lettre, temp->code);
+        temp = temp->next;
+    }*/
+    write_in_huffman_code(text, list_characters_huffman_code,sizelist);
 
     free(list_characters);
 
-   
     return 0;
 
 }
