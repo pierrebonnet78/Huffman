@@ -114,30 +114,36 @@ void character_comparaison()
     FILE* fp;
     fp = NULL;
     char str;
-    char* filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Alice.txt";
+    char* filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Output.txt";
     fp = fopen(filename, "r");
+    int count1 = 0;
+    int count2 = 0;
+    float ratio; 
     if (fp != NULL) {
-        int count = 0;
+        
         while ((str = fgetc(fp)) != EOF)
         {
-            count++;
+            count1++;
         }
-        printf("\nNumber of characters in Alice.txt : %d ", count);
+        printf("\n\tNumber of characters before compression : %d", count1);
         fclose(fp);
     }
     else {
         printf("Problem in openning Alice.txt");
     }
     fp = NULL;
-    filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Output.txt";
+    filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\OutputHuffmanCode.txt";
     fp = fopen(filename, "r");
     if (fp != NULL) {
-        int count = 0;
         while ((str = fgetc(fp)) != EOF)
         {
-            count++;
+            count2++;
         }
-        printf("\nNumber of characters in Output.txt : %d ", count);
+        ratio = ((float)count2 * 100) / (float)count1;
+        char pourcent;
+        pourcent = '%';
+        printf("\n\tNumber of characters after compression : %d ", count2);
+        printf("\n\tCompression rate : %.2f %c\n\n", ratio, pourcent);
         fclose(fp);
     }
     else {
@@ -229,24 +235,24 @@ void display_list_of_occ(ListChar* list)  //test function
 ListChar* sortListChar(ListChar* liste) //sort the list of occurence by field 'occ' using BUBBLE SORTING
 {
     if (liste == NULL)
-        return NULL; // liste vide, rien à trier
+        return NULL; // liste vide, rien Ã  trier
     if (liste->next == NULL)
-        return liste; // un seul élément, rien à trier
+        return liste; // un seul Ã©lÃ©ment, rien Ã  trier
     ListChar* root = liste;
     int restart;
     do{
-        // commence au début de la liste
+        // commence au dÃ©but de la liste
         ListChar* previous = NULL;
         ListChar* element = root;
         ListChar* succeeding = element->next;
         restart = 0;
         while (succeeding != NULL){
             if (succeeding->occ < element->occ){
-                // si le classement de l'élément et de son suivant est incorrect :
+                // si le classement de l'Ã©lÃ©ment et de son suivant est incorrect :
 
-                // la liste devra être re-parcourue
+                // la liste devra Ãªtre re-parcourue
                 restart = 1;
-                // inverse l'élément courant et son succeeding
+                // inverse l'Ã©lÃ©ment courant et son succeeding
                 if(previous == NULL){
                     root = succeeding;
                 }
@@ -260,11 +266,11 @@ ListChar* sortListChar(ListChar* liste) //sort the list of occurence by field 'o
                 succeeding = element->next;
             }
             else{
-                // si le classement de l'élément et de son suivant est correct :
+                // si le classement de l'Ã©lÃ©ment et de son suivant est correct :
                 // avance dans la liste
-                previous = element;         // nouveau précédent = ancien élément
-                element = element->next;    // nouvel élément = ancien suivant
-                succeeding = element->next; // nouveau suivant = suivant du nouvel élément
+                previous = element;         // nouveau prÃ©cÃ©dent = ancien Ã©lÃ©ment
+                element = element->next;    // nouvel Ã©lÃ©ment = ancien suivant
+                succeeding = element->next; // nouveau suivant = suivant du nouvel Ã©lÃ©ment
             }
         }
     }while (restart);
@@ -553,8 +559,25 @@ void reset_dico() {
     fclose(fp);
 }
 
-int main()
-{
+void free_list_char(ListChar* list) {
+    ListChar* temp;
+    while (list != NULL) {
+        temp = list;
+        list = list->next;
+        free(temp);
+    }
+
+}
+
+void free_huffman_tree(Node* root) {
+    if (root != NULL) {
+        free_huffman_tree(root->right);
+        free_huffman_tree(root->left);
+        free(root);
+    }
+}
+
+void compress_txt(){
     char text[MAXCHAR];
     readtext(text);
     int sizetext;
@@ -563,33 +586,26 @@ int main()
     letterToByte(text, bytes, sizetext);
     writetext(bytes, sizetext);
     free(bytes);
-    //character_comparaison();
-    
     ListChar* list_characters = NULL;
     list_characters = number_of_occurences(text);
-
     sortListChar(list_characters);
-    //display_list_of_occ(list_characters);
     
-
     reset_dico();
     Node* root;
     root = huffman_code(list_characters);
-
-    
     Letter* list_characters_huffman_code = NULL;
-
     list_characters_huffman_code = translate_text(text, list_characters);
     Letter* temp = list_characters_huffman_code;
-
-    while (temp != NULL) {
-        printf("%s %s\n", temp->lettre, temp->code);
-        temp = temp->next;
-    }
-
     write_in_huffman_code(text, list_characters_huffman_code);
+    free_list_char(list_characters);
+    free_huffman_tree(root);
+    character_comparaison();
 
-    free(list_characters);
+}
+
+int main()
+{
+    compress_txt();
 
     return 0;
 
