@@ -45,9 +45,9 @@ void readtext(char* output)
 {
     FILE* fp;
     fp = NULL;
-    char str[MAXCHAR];
+    char *str[MAXCHAR];
     char* filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Alice.txt";
-    fp = fopen( filename, "r");
+    fp = fopen(filename, "r");
     if (fp != NULL) {
         while (fgets(str, MAXCHAR, fp) != NULL)
         {
@@ -72,14 +72,14 @@ long decimalToBinary(int decimalnum) {
     return binarynum;
 }
 
-void letterToByte(char input[], long* bytes, int sizetext){
-    int *ascii = (int*)malloc(sizetext * sizeof(int));
+void letterToByte(char input[], long* bytes, int sizetext) {
+    int* ascii = (int*)malloc(sizetext * sizeof(int));
     if (ascii != NULL) {
         int i;
-        for (i = 0; i < sizetext; i++){
+        for (i = 0; i < sizetext; i++) {
             ascii[i] = input[i];
         }
-        for (i = 0; i < sizetext; i++){
+        for (i = 0; i < sizetext; i++) {
             long temp = decimalToBinary(ascii[i]);
             bytes[i] = temp;
         }
@@ -89,11 +89,11 @@ void letterToByte(char input[], long* bytes, int sizetext){
 
 void writetext(long bytes[], int size)
 {
-    
+
     FILE* fp;
     fp = NULL;
     fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Output.txt", "w");
-    if (fp != NULL){
+    if (fp != NULL) {
         for (int i = 0; i < size; i++)
         {
             fprintf(fp, "%ld ", bytes[i]);
@@ -118,9 +118,9 @@ void character_comparaison()
     fp = fopen(filename, "r");
     int count1 = 0;
     int count2 = 0;
-    float ratio; 
+    float ratio;
     if (fp != NULL) {
-        
+
         while ((str = fgetc(fp)) != EOF)
         {
             count1++;
@@ -169,7 +169,7 @@ int is_in_the_list(ListChar* l, char letter)
 }
 
 ListChar* number_of_occurences(char string[MAXCHAR])
-{ 
+{
     int i;
     ListChar* list = (ListChar*)malloc(sizeof(ListChar));
     ListChar* temp = list, * temp2;
@@ -184,33 +184,32 @@ ListChar* number_of_occurences(char string[MAXCHAR])
         }
     }
     if (list != NULL) {
-        if (strlen(string) > 0){
+        if (strlen(string) > 0) {
             list->next = NULL; /// la j'initialise la premiere valeur de ma liste avec la premiere lettre du message.
             list->letter = string[0];
             list->occ = 1;
 
-            for (i = 1; i < strlen(string); i++){ /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
+            for (i = 1; i < strlen(string); i++) { /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
                 int pos = is_in_the_list(list, string[i]);
-                if (pos == -1){
-                    ListChar* new_letter =(ListChar*)malloc(sizeof(ListChar));
+                if (pos == -1) {
+                    ListChar* new_letter = (ListChar*)malloc(sizeof(ListChar));
                     if (new_letter != NULL) {
-                        new_letter->letter = string[i]; 
+                        new_letter->letter = string[i];
                         new_letter->occ = 1;
                         new_letter->next = NULL;
                         temp->next = new_letter;
                         temp = temp->next;
                     }
                 }
-                else{
+                else {
                     int count = 1; /// ducoup dans le cas contraire je recherche la position grace a is_in_the_list et j'auguemente juste l'occurence de 1.
                     temp2 = list;
-                    while (temp2 != NULL && count != pos){
+                    while (temp2 != NULL && count != pos) {
                         temp2 = temp2->next;
                         count += 1;
                     }
                     temp2->occ += 1;
                 }
-                
             }
             return list;
         }
@@ -222,7 +221,7 @@ ListChar* number_of_occurences(char string[MAXCHAR])
 }
 
 void display_list_of_occ(ListChar* list)  //test function
-{ 
+{
     ListChar* temp = list;
     while (temp != NULL)
     {
@@ -240,23 +239,23 @@ ListChar* sortListChar(ListChar* liste) //sort the list of occurence by field 'o
         return liste; // un seul élément, rien à trier
     ListChar* root = liste;
     int restart;
-    do{
+    do {
         // commence au début de la liste
         ListChar* previous = NULL;
         ListChar* element = root;
         ListChar* succeeding = element->next;
         restart = 0;
-        while (succeeding != NULL){
-            if (succeeding->occ < element->occ){
+        while (succeeding != NULL) {
+            if (succeeding->occ < element->occ) {
                 // si le classement de l'élément et de son suivant est incorrect :
 
                 // la liste devra être re-parcourue
                 restart = 1;
                 // inverse l'élément courant et son succeeding
-                if(previous == NULL){
+                if (previous == NULL) {
                     root = succeeding;
                 }
-                else{
+                else {
                     previous->next = succeeding;
                 }
                 element->next = succeeding->next;
@@ -265,7 +264,7 @@ ListChar* sortListChar(ListChar* liste) //sort the list of occurence by field 'o
                 previous = succeeding;
                 succeeding = element->next;
             }
-            else{
+            else {
                 // si le classement de l'élément et de son suivant est correct :
                 // avance dans la liste
                 previous = element;         // nouveau précédent = ancien élément
@@ -273,7 +272,7 @@ ListChar* sortListChar(ListChar* liste) //sort the list of occurence by field 'o
                 succeeding = element->next; // nouveau suivant = suivant du nouvel élément
             }
         }
-    }while (restart);
+    } while (restart);
     return root;
 }
 
@@ -292,7 +291,7 @@ Node* createNode(char data, int occurence)
 Queue* createQueue(int size)
 {
     Queue* queue = (Queue*)malloc(sizeof(Queue));
-    if (queue != NULL){
+    if (queue != NULL) {
         queue->front = -1;
         queue->rear = -1;
         queue->size = size;
@@ -303,37 +302,37 @@ Queue* createQueue(int size)
 
 int isQueueSizeOne(Queue* queue)
 {
-    if ((queue->front == queue->rear) && (queue->front != -1)){
+    if ((queue->front == queue->rear) && (queue->front != -1)) {
         return 1;
     }
-    else{
+    else {
         return 0;
     }
 }
 
 int isQueueEmpty(Queue* queue)
 {
-    if (queue->front == -1){
+    if (queue->front == -1) {
         return 1;
     }
-    else{
+    else {
         return 0;
     }
 }
 
 int isQueueFull(Queue* queue)
 {
-    if (queue->rear == queue->size - 1){
+    if (queue->rear == queue->size - 1) {
         return 1;
     }
-    else{
+    else {
         return 0;
     }
 }
 
 void enQueue(Queue* queue, Node* node)
 {
-    if (!isQueueFull(queue) && node != NULL){
+    if (!isQueueFull(queue) && node != NULL) {
         queue->arrayofnode[++queue->rear] = node;
         if (queue->front == -1) {
             ++queue->front;
@@ -343,13 +342,13 @@ void enQueue(Queue* queue, Node* node)
 
 Node* deQueue(Queue* queue)
 {
-    if (!isQueueEmpty(queue)){
+    if (!isQueueEmpty(queue)) {
         Node* temp = queue->arrayofnode[queue->front];
-        if (queue->front == queue->rear){ // There is only one item in the array
+        if (queue->front == queue->rear) { // There is only one item in the array
             queue->front = -1;
             queue->rear = -1;
         }
-        else{
+        else {
             ++queue->front;
         }
         return temp;
@@ -358,7 +357,7 @@ Node* deQueue(Queue* queue)
 
 Node* getFrontQueue(Queue* queue)
 {
-    if (isQueueEmpty(queue)){
+    if (isQueueEmpty(queue)) {
         return NULL;
     }
     return queue->arrayofnode[queue->front];
@@ -366,7 +365,7 @@ Node* getFrontQueue(Queue* queue)
 
 Node* findMinTwoQueues(Queue* Queue1, Queue* Queue2)
 {
-    if (Queue1 != NULL && Queue2 != NULL){
+    if (Queue1 != NULL && Queue2 != NULL) {
         // If queue 1 is empty, dequeue from queue 2
         if (isQueueEmpty(Queue1)) {
             return deQueue(Queue2);
@@ -378,7 +377,7 @@ Node* findMinTwoQueues(Queue* Queue1, Queue* Queue2)
         }
 
         // Else compare the front of the two queues and dequeue min
-        if (getFrontQueue(Queue1)->occ < getFrontQueue(Queue2)->occ){
+        if (getFrontQueue(Queue1)->occ < getFrontQueue(Queue2)->occ) {
             return deQueue(Queue1);
         }
         //Last possibility
@@ -388,10 +387,10 @@ Node* findMinTwoQueues(Queue* Queue1, Queue* Queue2)
 
 int isLeaf(Node* root)
 {
-    if (root->left == NULL && root->right == NULL){
+    if (root->left == NULL && root->right == NULL) {
         return 1;
     }
-    else{
+    else {
         return 0;
     }
 }
@@ -414,7 +413,7 @@ void createDico(int arr[], int n, Node* root)
     else {
         printf("Problem in openning Dico.txt");
     }
-    
+
 }
 
 
@@ -422,8 +421,8 @@ int getListCharactersSize(ListChar* list_characters)
 {
     int size = 0;
     ListChar* temp = list_characters;
-    if (temp != NULL){
-        while (temp->next != NULL){
+    if (temp != NULL) {
+        while (temp->next != NULL) {
             size++;
             temp = temp->next;
         }
@@ -435,7 +434,7 @@ int getListCharactersSize(ListChar* list_characters)
 Node* createHuffmanTreeWithQueue(ListChar* list_characters)
 {
     int size;
-    size = getListCharactersSize(list_characters) +1 ;
+    size = getListCharactersSize(list_characters) + 1;
     Node* left, * right, * top;
     int i;
     ListChar* temp = list_characters;
@@ -445,11 +444,11 @@ Node* createHuffmanTreeWithQueue(ListChar* list_characters)
     Queue* queue2 = createQueue(size);
 
     // Create a leaf node for each character of the data[] array, enqueu it to queue 1
-    for (i = 0; i < size; i++){
+    for (i = 0; i < size; i++) {
         enQueue(queue1, createNode(temp->letter, temp->occ));
         temp = temp->next;
     }
-    while (!(isQueueEmpty(queue1) && isQueueSizeOne(queue2))){
+    while (!(isQueueEmpty(queue1) && isQueueSizeOne(queue2))) {
         // Dequeue two nodes with the min occurrence by looking at the front of both queues
         left = findMinTwoQueues(queue1, queue2);
         right = findMinTwoQueues(queue1, queue2);
@@ -460,6 +459,7 @@ Node* createHuffmanTreeWithQueue(ListChar* list_characters)
         top->right = right;
         enQueue(queue2, top);
     }
+   
     return deQueue(queue2);
 }
 
@@ -484,16 +484,22 @@ void printCodes(Node* root, int arr[], int top)
     }
 }
 
+void display_tree(Node* node) {
+    if (node == NULL)
+        return;
+    display_tree(node->left);
+    display_tree(node->right);
+    printf("\n%c ", node->letter);
+}
+
 Node* huffman_code(ListChar* list_characters)
 {
-    // Construct Huffman Tree
     Node* root = createHuffmanTreeWithQueue(list_characters);
-
     int arr[MAXCHAR];
     int top = 0;
     printCodes(root, arr, top);
     return root;
- 
+
 }
 
 
@@ -549,7 +555,7 @@ void write_in_huffman_code(char* text, Letter* list_characters_huffman_code) {
     else {
         printf("\nProblem in opening OutputHuffmanCode.txt");
     }
-    
+
 }
 
 void reset_dico() {
@@ -569,15 +575,36 @@ void free_list_char(ListChar* list) {
 
 }
 
-void free_huffman_tree(Node* root) {
+void free_tree(Node* root) {
     if (root != NULL) {
-        free_huffman_tree(root->right);
-        free_huffman_tree(root->left);
+        free_tree(root->right);
+        free_tree(root->left);
         free(root);
     }
 }
 
-void compress_txt(){
+void free_list_char_huffman_code(Letter* list) {
+    Letter* temp;
+    while (list != NULL) {
+        temp = list;
+        list = list->next;
+        free(temp);
+    }
+
+}
+Node* create_AVL(char* array[257], int start, int end) {
+    if (start > end) {
+        return NULL;
+    }
+    int mid = (start + end) / 2;
+    Node* root = (Node*)malloc(sizeof(Node));
+    root->letter = array[mid];
+    root->left = create_AVL(array, start, mid - 1);
+    root->right = create_AVL(array, mid + 1, end);
+    return root;
+}
+
+void compress_txt() {
     char text[MAXCHAR];
     readtext(text);
     int sizetext;
@@ -589,19 +616,38 @@ void compress_txt(){
     ListChar* list_characters = NULL;
     list_characters = number_of_occurences(text);
     sortListChar(list_characters);
-    
+
+    display_list_of_occ(list_characters);
+
+
     reset_dico();
     Node* root;
     root = huffman_code(list_characters);
     Letter* list_characters_huffman_code = NULL;
     list_characters_huffman_code = translate_text(text, list_characters);
-    Letter* temp = list_characters_huffman_code;
+    
     write_in_huffman_code(text, list_characters_huffman_code);
+
+    ListChar* temp = list_characters;
+    char* array[257];
+    int i = 0;
+    while (temp != NULL) {
+        array[i] = temp->letter;
+        temp = temp->next;
+        i++;
+    }
+    Node* avl;
+    avl = create_AVL(array, 0, i);
+    display_tree(avl);
     free_list_char(list_characters);
-    free_huffman_tree(root);
+    free_list_char_huffman_code(list_characters_huffman_code);
+    free_tree(root);
+    free_tree(avl);
     character_comparaison();
 
+    printf("\n\n\t Memory free ok.");
 }
+
 
 int main()
 {
