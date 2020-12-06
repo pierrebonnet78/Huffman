@@ -20,9 +20,7 @@ void letter_to_byte(char input[], long* bytes, int sizetext) {
     if (ascii != NULL) {
         int i;
         for (i = 0; i < sizetext; i++) {
-            if (input[i] < 0 || input[i] > 127){
-                input[i] = '?';
-            }
+            
             ascii[i] = input[i];
         }
         for (i = 0; i < sizetext; i++) {

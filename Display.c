@@ -10,18 +10,28 @@ void display_tree(Node* node) {
         return;
     display_tree(node->left);
     display_tree(node->right);
-    printf("\n%c : %s", node->letter[0], node->code_huffman);
+    printf("\n%c : %d", node->letter, node->occ);
+}
+
+void print_tab(Node* tab[256], int len) {
+    for (int i = 0; i <= len; i++) {
+        printf("\n%c - %d", tab[i]->letter, tab[i]->occ);
+
+    }
 }
 
 void display_list_of_occ(ListChar* list)  //test function
 {
+    printf("\t\tChar | Occurrences ");
+    printf("\n\t\t--------------------\n");
     ListChar* temp = list;
     while (temp != NULL)
     {
-        printf("\n %c : %d", temp->letter, temp->occ);
+        printf("\n\t\t %c    | %d", temp->letter, temp->occ);
 
         temp = temp->next;
     }
+    printf("\n\n");
 }
 
 void character_comparaison()
@@ -29,7 +39,7 @@ void character_comparaison()
     FILE* fp;
     fp = NULL;
     char str;
-    char* filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Output.txt";
+    char* filename = "Output.txt";
     fp = fopen(filename, "r");
     int count1 = 0;
     int count2 = 0;
@@ -47,7 +57,7 @@ void character_comparaison()
         printf("Problem in openning Alice.txt");
     }
     fp = NULL;
-    filename = "C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\OutputHuffmanCode.txt";
+    filename = "OutputHuffmanCode.txt";
     fp = fopen(filename, "r");
     if (fp != NULL) {
         while ((str = fgetc(fp)) != EOF)

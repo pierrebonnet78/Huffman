@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "WriteText.h"
+#define MAXCHAR 10000000
 
 
 void reset_dico() {
@@ -30,10 +31,10 @@ void write_text(long bytes[], int size)
 }
 
 Node* search_in_dico(Node* temp, char value) {
-    if (temp == NULL || temp->letter[0] == value) {
+    if (temp == NULL || temp->letter == value) {
         return temp;
     }
-    if (temp->letter[0] < value) {
+    if (temp->letter < value) {
         return search_in_dico(temp->right, value);
     }
     return search_in_dico(temp->left, value);
@@ -43,7 +44,7 @@ Node* search_in_dico(Node* temp, char value) {
 void write_in_huffman_code(char* text, Node* avl) {
     FILE* fp;
     fp = NULL;
-    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\OutputHuffmanCode.txt", "w");
+    fp = fopen("OutputHuffmanCode.txt", "w");
     if (fp != NULL) {
         int size, i;
         size = strlen(text);
@@ -54,9 +55,49 @@ void write_in_huffman_code(char* text, Node* avl) {
                 fprintf(fp, "%s ", node->code_huffman);
             }
         }
+        fputc(42, fp);
         fclose(fp);
     }
     else {
         printf("\nProblem in opening OutputHuffmanCode.txt");
     }
 }
+
+void write_text_ascii(Node* avl, char* text) {
+    FILE* fp;
+    fp = NULL;
+    
+    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\decompressedFile.txt", "w");
+    if (fp != NULL){
+        char tmp;
+        int i = 0;
+        int y = 0;
+        char my_array[25];
+        /*for (y = 0; y < 25; y++) {
+            my_array[y] = '2';
+        }*/
+        for (int i = 0; i < strlen(text); i++){
+            while (text[i] != 42) {
+                if (text[i] == 32) {
+                    
+                    for (y = 0; y <= 24; y++) {
+                        my_array[y] = '2';
+                    }
+                    i++;
+                }
+                else {
+                    my_array[i] = text[i];
+                    i++;
+                }
+            }
+            printf("%s\n", my_array);
+         }
+            //while(fputc(text[i], fp);
+        fclose(fp);
+        }
+    
+    else {
+        printf("\nProblem in opening the compressed file.");
+    }
+}
+

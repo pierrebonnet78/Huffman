@@ -10,4 +10,5 @@ void reset_dico();
 void write_text(long bytes[], int size);
 void write_in_huffman_code(char* text, Node* avl);
 Node* search_in_dico(Node* temp, char value);
+void write_text_ascii(Node* avl, char* text);
 #endif // !WRITE_TEXT_H

@@ -4,30 +4,19 @@
 
 
 
-
-ListChar* number_of_occurences(char string[MAXCHAR])
+ListChar* number_of_occurences(char string[MAXCHAR]) //naive version with linked list
 {
     int i;
     ListChar* list = (ListChar*)malloc(sizeof(ListChar));
     ListChar* temp = list, * temp2;
-    for (i = 0; i < strlen(string); i++) {
-        if (string[i] == ' ') {
-            string[i] = '#'; // equivalent de espace
-        }
-    }
-    for (i = 0; i < strlen(string); i++) {
-        if (string[i] == 10) {
-            string[i] = '%';  // equivalent de retour a la ligne
-        }
-    }
 
     if (list != NULL) {
         if (strlen(string) > 0) {
-            list->next = NULL; /// la j'initialise la premiere valeur de ma liste avec la premiere lettre du message.
+            list->next = NULL; 
             list->letter = string[0];
             list->occ = 1;
 
-            for (i = 1; i < strlen(string); i++) { /// la si la lettre n'a jamais ete rencontree j'ajoute un noeud dns la liste.
+            for (i = 1; i < strlen(string); i++) { 
                 int pos = is_in_the_list(list, string[i]);
                 if (pos == -1) {
                     ListChar* new_letter = (ListChar*)malloc(sizeof(ListChar));
@@ -40,7 +29,7 @@ ListChar* number_of_occurences(char string[MAXCHAR])
                     }
                 }
                 else {
-                    int count = 1; /// ducoup dans le cas contraire je recherche la position grace a is_in_the_list et j'auguemente juste l'occurence de 1.
+                    int count = 1; 
                     temp2 = list;
                     while (temp2 != NULL && count != pos) {
                         temp2 = temp2->next;
@@ -57,6 +46,8 @@ ListChar* number_of_occurences(char string[MAXCHAR])
     }
     return NULL;
 }
+
+
 
 ListChar* sort_listChar(ListChar* liste ) //sort the list of occurence by field 'occ' using BUBBLE SORTING
 {
@@ -133,3 +124,24 @@ void free_list_char(ListChar* list) {
     }
 }
 
+ListChar* tab_to_listchar(Node* tab[256], int len) {
+    if (tab != NULL) {
+        ListChar* list = (ListChar*)malloc(sizeof(ListChar));
+        ListChar* temp = list;
+        list->letter = tab[0]->letter;
+        list->occ = tab[0]->occ;
+        list->next = NULL;
+        for (int i = 1; i <= len; i++) {
+            ListChar* new_letter = (ListChar*)malloc(sizeof(ListChar));
+            if (new_letter != NULL) {
+                new_letter->letter = tab[i]->letter;
+                new_letter->occ = tab[i]->occ;
+                new_letter->next = NULL;
+                temp->next = new_letter;
+                temp = temp->next;
+            }
+        }
+        return list;
+    }
+
+}

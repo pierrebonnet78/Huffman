@@ -6,8 +6,8 @@
 
 typedef struct Letter
 {
-    char lettre[1];
-    char code[20];
+    char lettre;
+    char code[257];
     struct Node* next;
 }Letter;
 

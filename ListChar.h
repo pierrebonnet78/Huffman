@@ -3,6 +3,7 @@
 #define LISTCHAR_H
 #include <stdio.h>
 #include <stdlib.h>
+#include "Node.h"
 #define MAXCHAR 10000000
 
 typedef struct ListChar
@@ -18,6 +19,8 @@ ListChar* sort_listChar(ListChar* liste);
 int  get_list_char_size(ListChar* list_characters);
 int is_in_the_list(ListChar* l, char letter);
 void free_list_char(ListChar* list);
+ListChar* tab_to_listchar(Node* tab[256], int len);
+
 
 
 

@@ -9,6 +9,7 @@
 
 void read_text(char* output);
 Letter* read_and_store_dico(char* text, ListChar* list_characters);
+void read_text_compressed(char* output);
 
 
 #endif // !READ_TEXT_H

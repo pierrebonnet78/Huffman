@@ -27,7 +27,7 @@ Letter* sort_listChar_v2(Letter* liste) //sort the list of Letter by ascii chara
         Letter* succeeding = element->next;
         restart = 0;
         while (succeeding != NULL) {
-            if (succeeding->lettre[0] < element->lettre[0]) {
+            if (succeeding->lettre < element->lettre) {
                 restart = 1;
                 if (previous == NULL) {
                     root = succeeding;
