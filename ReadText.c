@@ -92,3 +92,26 @@ Letter* read_and_store_dico(char* text, ListChar* list_characters) {
         return NULL;
     }
 }
+
+void read_avl_in_file(char* text) {
+    FILE* fp;
+    fp = NULL;
+    char* filename = "AVLbackup.txt";
+    fp = fopen(filename, "r");
+    int i = 0;
+    if (fp != NULL) {
+        char tmp = fgetc(fp);
+        while (tmp != EOF && i < MAXCHAR) {
+            text[i] = tmp;
+            tmp = fgetc(fp);
+            i++;
+        }
+        if (tmp != EOF) {
+            printf("Error in compiling, size of the document is to big.");
+        }
+        fclose(fp);
+    }
+    else {
+        printf("Problem in opening AVLbackup.txt");
+    }
+}

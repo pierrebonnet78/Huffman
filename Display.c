@@ -22,12 +22,12 @@ void print_tab(Node* tab[256], int len) {
 
 void display_list_of_occ(ListChar* list)  //test function
 {
-    printf("\t\tChar | Occurrences ");
-    printf("\n\t\t--------------------\n");
+    printf("\nChar | Occurrences ");
+    printf("\n--------------------\n");
     ListChar* temp = list;
     while (temp != NULL)
     {
-        printf("\n\t\t %c    | %d", temp->letter, temp->occ);
+        printf("\n  %c  | %d", temp->letter, temp->occ);
 
         temp = temp->next;
     }

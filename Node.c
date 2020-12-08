@@ -5,10 +5,11 @@
 #include "Node.h"
 
 
-void free_tree(Node* root) {
+
+void free_node(Node* root) {
     if (root != NULL) {
-        free_tree(root->right);
-        free_tree(root->left);
+        free_node(root->right);
+        free_node(root->left);
         free(root);
     }
 }

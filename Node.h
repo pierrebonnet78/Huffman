@@ -14,7 +14,7 @@ typedef struct Node
 } Node;
 
 Node* create_node(char data, int occurence);
-void free_tree(Node* root);
+void free_node(Node* root);
 void swap_node(Node** a, Node** b);
 void insertion_sort(Node* arr[256], int n);
 int add_by_dichotomie(Node* arr[256]);

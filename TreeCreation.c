@@ -66,21 +66,23 @@ void create_dico(int arr[], int n, Node* root) {
     }
 }
 
-void min_heapify(Tree* tree, int idx)
+void min_nodes(Tree* tree, int idx)
 {
     int smallest = idx;
     int left = 2 * idx + 1;
     int right = 2 * idx + 2;
 
-    if ((left < tree->size) && (tree->arrayofnode[left]->occ < tree->arrayofnode[smallest]->occ))
+    if ((left < tree->size) && (tree->arrayofnode[left]->occ < tree->arrayofnode[smallest]->occ)) {
         smallest = left;
+    }
 
-    if ((right < tree->size) && (tree->arrayofnode[right]->occ < tree->arrayofnode[smallest]->occ))
+    if ((right < tree->size) && (tree->arrayofnode[right]->occ < tree->arrayofnode[smallest]->occ)) {
         smallest = right;
+    }
 
     if (smallest != idx) {
         swap_node(&tree->arrayofnode[smallest], &tree->arrayofnode[idx]);
-        min_heapify(tree, smallest);
+        min_nodes(tree, smallest);
     }
 }
 
@@ -97,7 +99,7 @@ Node* extract_min_node(Tree* tree)
     Node* temp = tree->arrayofnode[0];
     tree->arrayofnode[0] = tree->arrayofnode[tree->size - 1];
     tree->size--;
-    min_heapify(tree, 0);
+    min_nodes(tree, 0);
     return temp;
 }
 
@@ -119,24 +121,21 @@ void build_tree(Tree* tree)
     int n = tree->size - 1;
     int i;
     for (i = (n - 1) / 2; i >= 0; --i)
-        min_heapify(tree, i);
+        min_nodes(tree, i);
 }
 
-Tree* create_and_build_tree(char array_characters[], int array_occurences[], int size)
+Tree* create_and_build_tree(int size, Node* arr[256])
 {
     Tree* tree = create_tree(size);
-    for (int i = 0; i < size; ++i) {
-        tree->arrayofnode[i] = create_node(array_characters[i], array_occurences[i]);
-    }
-    tree->size = size;
+    tree->arrayofnode = arr;
     build_tree(tree);
     return tree;
 }
 
-Tree* build_huffman_tree(char array_characters[], int array_occurences[], int size)
+Tree* build_huffman_tree(int size, Node* arr[256])
 {
     Node* left, * right, * top;
-    Tree* tree = create_and_build_tree(array_characters, array_occurences, size);
+    Tree* tree = create_and_build_tree(size, arr);
     while (!is_size_one(tree)) {
         left = extract_min_node(tree);
         right = extract_min_node(tree);
@@ -145,15 +144,14 @@ Tree* build_huffman_tree(char array_characters[], int array_occurences[], int si
         top->right = right;
         insert_node_in_tree(tree, top);
     }
-
     return extract_min_node(tree);
 }
 
-Tree* huffman_coding(char array_characters[], int array_occurences[], int size) {
+Tree* huffman_coding(int size, Node* arr[256]) {
 
-    Tree* root = build_huffman_tree(array_characters, array_occurences, size);
-    int arr[256];
+    Tree* root = build_huffman_tree(size, arr);
+    int array[256];
     int top = 0;
-    scan_path_leaf_of_tree(root, arr, top);
+    scan_path_leaf_of_tree(root, array, top);
     return root;
 }

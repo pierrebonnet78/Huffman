@@ -9,7 +9,14 @@
 void reset_dico() {
     FILE* fp;
     fp = NULL;
-    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Dico.txt", "w");
+    fp = fopen("Dico.txt", "w");
+    fclose(fp);
+}
+
+void reset_avl_backup() {
+    FILE* fp;
+    fp = NULL;
+    fp = fopen("AVLbackup.txt", "w");
     fclose(fp);
 }
 void write_text(long bytes[], int size)
@@ -17,7 +24,7 @@ void write_text(long bytes[], int size)
 
     FILE* fp;
     fp = NULL;
-    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\Output.txt", "w");
+    fp = fopen("Output.txt", "w");
     if (fp != NULL) {
         for (int i = 0; i < size; i++)
         {
@@ -67,7 +74,7 @@ void write_text_ascii(Node* avl, char* text) {
     FILE* fp;
     fp = NULL;
     
-    fp = fopen("C:\\Users\\pierr\\OneDrive - Efrei\\Documents\\EFREI\\S03\\Algo\\C\\Huffman Project\\Huffman Project\\decompressedFile.txt", "w");
+    fp = fopen("decompressedFile.txt", "w");
     if (fp != NULL){
         char tmp;
         int i = 0;
@@ -96,6 +103,49 @@ void write_text_ascii(Node* avl, char* text) {
         fclose(fp);
         }
     
+    else {
+        printf("\nProblem in opening the compressed file.");
+    }
+}
+
+void post_order_tree_traversal(Node* avl) {
+    if (avl == NULL) {
+        return;
+    }
+    post_order_tree_traversal(avl->left);
+    post_order_tree_traversal(avl->right);
+    if (is_leaf(avl)) {
+        write_avl(avl, 1);
+    }
+    else {
+        write_avl(avl, 0);
+    }
+}
+
+void write_avl(Node* avl, int leaf) {
+    FILE* fp;
+    fp = NULL;
+    fp = fopen("AVLbackup.txt", "a");
+    if (fp != NULL) {
+        if (leaf) {
+            fputc(49, fp);
+            if (avl->letter == 32) {
+                fputc(35, fp);
+            }
+            else {
+                fputc(avl->letter, fp);
+            }
+            fputs(avl->code_huffman, fp);
+            fputc(32, fp);
+        }
+        else {
+            fputc(48, fp);
+            fputc(32, fp);
+        }
+
+        fclose(fp);
+    }
+
     else {
         printf("\nProblem in opening the compressed file.");
     }

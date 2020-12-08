@@ -10,6 +10,7 @@
 void read_text(char* output);
 Letter* read_and_store_dico(char* text, ListChar* list_characters);
 void read_text_compressed(char* output);
+void read_avl_in_file(char* text);
 
 
 #endif // !READ_TEXT_H
